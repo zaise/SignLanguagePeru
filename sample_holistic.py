@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import copy
 import argparse
-import csv
+
 import cv2 as cv
 import numpy as np
 import mediapipe as mp
@@ -70,14 +70,28 @@ def main():
     cvFpsCalc = CvFpsCalc(buffer_len=10)
 
     #fields=["ind","cx","cy","hand"]
-    prueba = open('prueba.csv','w', encoding='utf-8', newline='')
-    csvwriter= csv.writer(prueba, delimiter=";",quoting=csv.QUOTE_NONNUMERIC)
-    csvwriter.writerow(['ind','cx','cy','hand'])
+    #prueba = open('prueba.csv','w', encoding='utf-8', newline='')
+    #csvwriter= csv.writer(prueba, delimiter=";",quoting=csv.QUOTE_NONNUMERIC)
+    #csvwriter.writerow(['ind','cx','cy','hand'])
     #ofile= open("pruebat.txt","w")
 
+    fi = open('prueba.csv', 'w')
+    fi.writelines('{tim},{Name},{ind},{cordx},{cordy},{hand},{frame}\n'.format(tim='Time',Name='Name',ind='index', cordx='CY', cordy='CX', hand='hand',frame='frame'))
+
+    fi1= open("prueba1.csv","w")
+
+    fi2= open("prueba2.csv","w")
+
+    fi3= open("prueba3.csv","w")
+
+    
     while cap.isOpened():
 
+        frame_i = str(cap.get(cv.CAP_PROP_POS_FRAMES))
+        m_sec = str(cap.get(cv.CAP_PROP_POS_MSEC))
+
         display_fps = cvFpsCalc.get()
+        #tpf = str(1/display_fps)
 
         # カメラキャプチャ #####################################################
         ret, image = cap.read()
@@ -99,7 +113,7 @@ def main():
             # 外接矩形の計算
             brect = calc_bounding_rect(debug_image, face_landmarks)
             # 描画
-            debug_image = draw_face_landmarks(debug_image, face_landmarks)
+            debug_image = draw_face_landmarks(debug_image, face_landmarks, fi, fi1, frame_i, m_sec)
             debug_image = draw_bounding_rect(use_brect, debug_image, brect)
 
         # Pose ###############################################################
@@ -109,7 +123,7 @@ def main():
             brect = calc_bounding_rect(debug_image, pose_landmarks)
             # 描画
             debug_image = draw_pose_landmarks(debug_image, pose_landmarks,
-                                              upper_body_only)
+                                              upper_body_only, fi, fi2, frame_i, m_sec)
             debug_image = draw_bounding_rect(use_brect, debug_image, brect)
 
         # Hands ###############################################################
@@ -124,9 +138,8 @@ def main():
             # 描画
             debug_image = draw_hands_landmarks(debug_image, cx, cy,
                                                left_hand_landmarks,
-                                               upper_body_only, prueba, csvwriter,'R')
+                                               upper_body_only, fi, fi3, frame_i, m_sec, 'R')
             debug_image = draw_bounding_rect(use_brect, debug_image, brect)
-           
 
         # 右手
         if right_hand_landmarks is not None:
@@ -137,16 +150,22 @@ def main():
             # 描画
             debug_image = draw_hands_landmarks(debug_image, cx, cy,
                                                right_hand_landmarks,
-                                               upper_body_only, prueba, csvwriter,'L')
+                                               upper_body_only, fi, fi3, frame_i, m_sec, 'L')
             debug_image = draw_bounding_rect(use_brect, debug_image, brect)
 
-        cv.putText(debug_image, "FPS:" + str(display_fps), (10, 30),
+        #cv.putText(debug_image, "FPS:" + str(display_fps), (10, 30),
+                   #cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2, cv.LINE_AA)
+
+        cv.putText(debug_image, "Msec:" + str(m_sec) + 'Frame:' + str(cap.get(cv.CAP_PROP_POS_FRAMES)), (10, 30),
                    cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2, cv.LINE_AA)
 
         # キー処理(ESC：終了) #################################################
         key = cv.waitKey(1)
         if key == 27:  # ESC
-            prueba.close()
+            fi.close()
+            fi1.close()
+            fi2.close()
+            fi3.close()
             break
 
         # 画面反映 #############################################################
@@ -181,6 +200,7 @@ def calc_palm_moment(image, landmarks):
             palm_array = np.append(palm_array, landmark_point, axis=0)
         if index == 17:  # 小指：付け根
             palm_array = np.append(palm_array, landmark_point, axis=0)
+
     M = cv.moments(palm_array)
     cx, cy = 0, 0
     if M['m00'] != 0:
@@ -208,7 +228,7 @@ def calc_bounding_rect(image, landmarks):
     return [x, y, x + w, y + h]
 
 
-def draw_hands_landmarks(image, cx, cy, landmarks, upper_body_only, prueba, csvwriter, handedness_str='R'):
+def draw_hands_landmarks(image, cx, cy, landmarks, upper_body_only, fi, fi3, frame_i, m_sec, handedness_str='R'):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
@@ -277,12 +297,23 @@ def draw_hands_landmarks(image, cx, cy, landmarks, upper_body_only, prueba, csvw
                        (landmark_x - 10, landmark_y - 10),
                        cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1,
                        cv.LINE_AA)
+        
+        #fi.writelines('{frames},{time},{i},{cx},{cy},{name}\n'.format(frames=m_sec, time=tpf, i=index, cx=landmark_x, cy=landmark_y, name=handedness_str))
+
+        #csvwriter.writerow([frame_i, index, landmark_x, landmark_y, handedness_str])
         #a=['index', 'landmark_x', 'landmark_y', 'handedness_str']
       	#a=[str(index), str(landmark_x), str(landmark_y), str(handedness_str)]
        	#a=str(index)+","+ str(landmark_x)+"," + str(landmark_y) + ","+ str(handedness_str)
-       	csvwriter.writerow([index, landmark_x, landmark_y, handedness_str])
+       	#csvwriter.writerow([index, landmark_x, landmark_y, handedness_str])
         #writer.writerow({'Parte y lado': 'mano' + str(handedness_str), 'x': landmark_x, 'y': landmark_y})
         #ofile.write(a)
+
+        fi.writelines('{Time},{Nam},{ind},{cordx},{cordy},{hand},{frame}'.format(Time=m_sec,Nam='Mano',ind=index, cordx=landmark_x, cordy=landmark_y, hand=handedness_str,frame=frame_i))
+        fi3.writelines('{Time},{Nam},{ind},{cordx},{cordy},{hand},{frame},'.format(Time=m_sec,Nam='Mano',ind=index, cordx=landmark_x, cordy=landmark_y, hand=handedness_str,frame=frame_i,))
+                
+    fi3.writelines('\n')
+    fi.writelines('\n')
+
         
 
         
@@ -330,10 +361,23 @@ def draw_hands_landmarks(image, cx, cy, landmarks, upper_body_only, prueba, csvw
     return image
 
 
-def draw_face_landmarks(image, landmarks):
+def draw_face_landmarks(image, landmarks, fi, fi1, frame_i, m_sec):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
+    
+    #fi1.writelines('{Time},{frame},{Nam},{ind},{cordx},{cordy},{hand},'.format(Time='Time', frame='frame', Nam='Name', ind='index'+'_'+index, cordx='CX', cordy='CY', hand='hand',))
+    
+    fi1.writelines('{frame},{Time},'.format(frame=frame_i,Time=m_sec,))
+    
+    #fi.writelines('\n')
+    #fi1.writelines('\n')
+    
+
+    #for index in enumerate(landmarks.landmark):
+        #fi1.writelines('{Time},{frame},{Nam},{ind},{cordx},{cordy},{hand},'.format(Time='Time', frame='frame', Nam='Name', ind='index', cordx='CX', cordy='CY', hand='hand',))
+  
+
 
     for index, landmark in enumerate(landmarks.landmark):
         if landmark.visibility < 0 or landmark.presence < 0:
@@ -346,6 +390,12 @@ def draw_face_landmarks(image, landmarks):
         landmark_point.append((landmark_x, landmark_y))
 
         cv.circle(image, (landmark_x, landmark_y), 1, (0, 255, 0), 1)
+
+        fi.writelines('{Time},{nam},{ind},{cordx},{cordy},{frame}'.format(Time=m_sec,nam='Face',ind=index, cordx=landmark_x, cordy=landmark_y,frame=frame_i))
+        fi1.writelines('{ind},{cordx},{cordy},'.format(ind=(index),cordx=landmark_x, cordy=landmark_y,))
+
+    fi.writelines('\n')
+    fi1.writelines('\n')
 
     if len(landmark_point) > 0:
         # 参考：https://github.com/tensorflow/tfjs-models/blob/master/facemesh/mesh_map.jpg
@@ -462,10 +512,13 @@ def draw_face_landmarks(image, landmarks):
     return image
 
 
-def draw_pose_landmarks(image, landmarks, upper_body_only, visibility_th=0.5):
+def draw_pose_landmarks(image, landmarks, upper_body_only, fi, fi2, m_sec, frame_i, visibility_th=0.5):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
+
+    #fi.writelines('\n')
+    #fi2.writelines('\n')
 
     for index, landmark in enumerate(landmarks.landmark):
         landmark_x = min(int(landmark.x * image_width), image_width - 1)
@@ -548,6 +601,13 @@ def draw_pose_landmarks(image, landmarks, upper_body_only, visibility_th=0.5):
                        (landmark_x - 10, landmark_y - 10),
                        cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1,
                        cv.LINE_AA)
+        
+        #fi.writelines('{frames},{time},{i},{cx},{cy},{name}\n'.format(frames=m_sec, time = tpf, i=index, cx=landmark_x, cy=landmark_y, name='pose_landmarks'))
+        fi.writelines('{Time},{Nam},{ind},{cordx},{cordy},{frame},{sp}'.format(Time=m_sec,Nam='Inferior',ind=index, cordx=landmark_x, cordy=landmark_y,frame=frame_i,sp='  '))            
+        fi2.writelines('{Time},{Nam},{ind},{cordx},{cordy},{frame},{sp},'.format(Time=m_sec,Nam='Inferior',ind=index, cordx=landmark_x, cordy=landmark_y,frame=frame_i,sp='  ',))            
+              
+    fi.writelines('\n')
+    fi2.writelines('\n')
 
     if len(landmark_point) > 0:
         # 右目
