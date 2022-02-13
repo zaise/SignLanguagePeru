@@ -20,14 +20,15 @@ Size=Ta.read()
 Ta.close 
 Lim = Size.split(';')
 
-
-F = pd.read_csv('prueba_1.csv', sep=';', index_col=False)    
+F = pd.read_csv('prueba_1.csv', sep=';', index_col=False,on_bad_lines='skip')    
 F1=F.Frame
 F=F.drop(['Frame', 'Tiempo'], axis=1)
 F=F.drop(F.columns[::3], axis='columns')
 f=0
-f_may=F1[len(F1)-1]
+f_may=0
 
+if len(F1)!=0:
+    f_may=F1[len(F1)-1]
 
 #I=np.genfromtxt(open('prueba_2.csv','r'), delimiter=',', invalid_raise = False)
 #I = csv.reader(open('prueba_2.csv', newline=''))
@@ -43,7 +44,7 @@ f_may=F1[len(F1)-1]
 #            print(I)
 #            co=co+1
 
-I = pd.read_csv('prueba_2.csv', sep=';', index_col=False)       
+I = pd.read_csv('prueba_2.csv', sep=';', index_col=False,on_bad_lines='skip')         
 I1=I.Frame
 I=I.drop(['Frame', 'Tiempo'], axis=1)
 I2=I
@@ -72,7 +73,7 @@ i_may=I1[len(I1)-1]
 #m_may=M1[len(M1)-1]
 
 
-M = pd.read_csv('prueba_3.csv', sep=';', index_col=False)       
+M = pd.read_csv('prueba_3.csv', sep=';', index_col=False,on_bad_lines='skip')       
 M1=M.Frame
 M=M.drop(['Frame', 'Tiempo'], axis=1)
 M=M.drop(M.columns[::4], axis='columns')
@@ -99,7 +100,7 @@ for n in range(0,int(N_)):
     point_color = (0, 0, 500)
     point_color_manos = (500, 0, 0)
 
-    if  n<f_may and (F1.iloc[f]==n):
+    if  f_may!=0 and n<f_may and (F1.iloc[f]==n):
         #x_f=F[f,0::2]
         #y_f=F[f,1::2]
 
@@ -225,10 +226,10 @@ for n in range(0,int(N_)):
             m=m+1
 
 
-    cv.namedWindow("image")
-    cv.imshow('image', img)
-    cv.waitKey (100)
-    cv.destroyAllWindows()
+    #cv.namedWindow("image")
+    #cv.imshow('image', img)
+    #cv.waitKey (100)
+    #cv.destroyAllWindows()
     frames='Img'+str(a)+'.jpg'
     cv.imwrite(os.path.join(path,frames),img)
 
