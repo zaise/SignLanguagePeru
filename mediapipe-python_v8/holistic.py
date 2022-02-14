@@ -52,7 +52,7 @@ def main(video_dir):
     # カメラ準備 ###############################################################
 
     #cap = cv.VideoCapture(input('Ingrese nombre del video:'))
-    video_dir_t=str('C:/Users/lesli/mediapipe-python/Videos/')+str(video_dir)
+    video_dir_t=str('Videos/')+str(video_dir)
     cap=cv.VideoCapture(video_dir_t)
     cap.set(cv.CAP_PROP_FRAME_WIDTH, cap_width)
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
@@ -66,7 +66,7 @@ def main(video_dir):
     
     # モデルロード #############################################################
     fourcc = cv.VideoWriter_fourcc(*'MJPG')
-    salida = cv.VideoWriter('output.avi', fourcc, 20.0, size)
+    salida = cv.VideoWriter(str('Salida/')+str(video_dir[:-4])+str('.avi'), fourcc, 20.0, size)
     mp_holistic = mp.solutions.holistic
     holistic = mp_holistic.Holistic(
         upper_body_only=upper_body_only,
