@@ -4,7 +4,7 @@ from time import sleep
 import holistic
 import ImVid
 
-path_video='C:/Users/lesli/mediapipe-python/Videos'
+path_video='Videos'
 
 contenido = os.listdir(path_video)
 
@@ -14,3 +14,4 @@ for n in range(0,len(contenido)):
     holistic.main(video_n)
     ImVid.main()
     ImVid.Video_salida(video_n)
+
