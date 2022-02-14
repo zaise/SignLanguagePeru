@@ -3,19 +3,18 @@ import os
 import numpy as np
 import cv2 as cv
 import shutil
-#import csv
-#from matplotlib import pyplot as plt
+
 import pandas as pd
 import glob
 
 
 def main():
 
-    shutil.rmtree('C:/Users/lesli/mediapipe-python/Imagenes/')
+    shutil.rmtree('Imagenes/')
 
-    os.makedirs('C:/Users/lesli/mediapipe-python/Imagenes', exist_ok=True)
+    os.makedirs('Imagenes', exist_ok=True)
 
-    path = "C:/Users/lesli/mediapipe-python/Imagenes"
+    path = "Imagenes"
 
     Ta=open("Tamaño.txt","r")  
     Size=Ta.read()
@@ -200,7 +199,7 @@ def Video_salida(a):
     total_jpg = len(jpg)
 
     for x in range (0,total_jpg):
-        path1 = 'C:/Users/lesli/mediapipe-python/Imagenes/Img%01d.jpg' % x
+        path1 = 'Imagenes/Img%01d.jpg' % x
         ima = cv.imread(path1)
         img_array.append(ima)
 
