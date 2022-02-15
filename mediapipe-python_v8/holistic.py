@@ -47,7 +47,6 @@ def main(video_dir):
     min_tracking_confidence = args.min_tracking_confidence
 
     use_brect = args.use_brect
-
     
     # カメラ準備 ###############################################################
 
@@ -56,13 +55,17 @@ def main(video_dir):
     cap=cv.VideoCapture(video_dir_t)
     cap.set(cv.CAP_PROP_FRAME_WIDTH, cap_width)
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
+    
     frame_width = int(cap.get(3)) 
     frame_height = int(cap.get(4)) 
     
 
     size = (frame_width, frame_height)
     Tamaño= open("Tamaño.txt","w")
-    Tamaño.write('{lim_x};{lim_y}'.format(lim_x=frame_width,lim_y=frame_height))
+    Tamaño.write('{lim_x};{lim_y}\n'.format(lim_x=frame_width,lim_y=frame_height))
+    Tamaño.write('{frame}\n'.format(frame=cap.get(cv.CAP_PROP_FRAME_COUNT)))
+    Tamaño.write('{fps}\n'.format(fps=cap.get(cv.CAP_PROP_FPS)))
+    Tamaño.write('{seconds}\n'.format(seconds=cap.get(cv.CAP_PROP_FRAME_COUNT)/int(cap.get(cv.CAP_PROP_FPS))))
     
     # モデルロード #############################################################
     fourcc = cv.VideoWriter_fourcc(*'MJPG')
@@ -181,6 +184,9 @@ def main(video_dir):
         cv.putText(debug_image, "SEG:" + str(tiemp), (300, 30),
                    cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2, cv.LINE_AA)
         
+        cv.putText(debug_image, "FRAME:" + str(frame_i), (10, 70),
+                    cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2, cv.LINE_AA)
+        
 
         # キー処理(ESC：終了) #################################################
         key = cv.waitKey(1)
@@ -255,9 +261,13 @@ def draw_hands_landmarks(image, cx, cy, landmarks, upper_body_only,prueba,prueba
     landmark_point = []
 
     prueba_3.writelines('{frame};{Time};'.format(frame=frame_i,Time=tiemp,))
+    cont_f3=-1
 
     # キーポイント
     for index, landmark in enumerate(landmarks.landmark):
+
+        cont_f3=cont_f3+1
+
         if landmark.visibility < 0 or landmark.presence < 0:
             continue
         
@@ -334,7 +344,13 @@ def draw_hands_landmarks(image, cx, cy, landmarks, upper_body_only,prueba,prueba
         #    mano=0
 
         prueba.writelines('{Time},{Nam},{ind},{cordx},{cordy},{hand},{frame}'.format(Time=tiemp,Nam='Mano',ind=index, cordx=landmark_x, cordy=landmark_y, hand=handedness_str,frame=frame_i))
-        prueba_3.writelines('{ind};{cordx};{cordy};{hand};'.format(ind=index, cordx=landmark_x, cordy=landmark_y, hand=handedness_str))
+        
+        if cont_f3<20:
+            prueba_3.writelines('{ind};{cordx};{cordy};{hand};'.format(ind=index, cordx=landmark_x, cordy=landmark_y, hand=handedness_str))
+
+        if cont_f3==20:
+            prueba_3.writelines('{ind};{cordx};{cordy};{hand}'.format(ind=index, cordx=landmark_x, cordy=landmark_y, hand=handedness_str))
+
                 
     prueba_3.writelines('\n')
     prueba.writelines('\n')
@@ -390,10 +406,13 @@ def draw_face_landmarks(image, landmarks, prueba,prueba_1,tiemp,frame_i):
     landmark_point = []
     
     prueba_1.writelines('{frame};{Time};'.format(frame=frame_i,Time=tiemp,))
+    cont_f1=-1
 
     for index, landmark in enumerate(landmarks.landmark):
         if landmark.visibility < 0 or landmark.presence < 0:
             continue
+
+        cont_f1=cont_f1+1
 
         landmark_x = min(int(landmark.x * image_width), image_width - 1)
         landmark_y = min(int(landmark.y * image_height), image_height - 1)
@@ -404,7 +423,14 @@ def draw_face_landmarks(image, landmarks, prueba,prueba_1,tiemp,frame_i):
         cv.circle(image, (landmark_x, landmark_y), 1, (0, 255, 0), 1)
 
         prueba.writelines('{Time},{nam},{ind},{cordx},{cordy},{frame}'.format(Time=tiemp,nam='Face',ind=index, cordx=landmark_x, cordy=landmark_y,frame=frame_i))
-        prueba_1.writelines('{ind};{cordx};{cordy};'.format(ind=(index),cordx=landmark_x, cordy=landmark_y,))
+
+        if cont_f1<467:
+            prueba_1.writelines('{ind};{cordx};{cordy};'.format(ind=(index),cordx=landmark_x, cordy=landmark_y,))
+
+        if cont_f1==467:
+            prueba_1.writelines('{ind};{cordx};{cordy}'.format(ind=(index),cordx=landmark_x, cordy=landmark_y,))
+
+        
 
     prueba_1.writelines('\n')
     prueba.writelines('\n')
@@ -531,11 +557,15 @@ def draw_pose_landmarks(image, landmarks, upper_body_only, prueba, prueba_2, tie
 
     prueba_2.writelines('{frame};{Time};'.format(frame=frame_i,Time=tiemp))
 
+    cont_f2=-1
+
     for index, landmark in enumerate(landmarks.landmark):
         landmark_x = min(int(landmark.x * image_width), image_width - 1)
         landmark_y = min(int(landmark.y * image_height), image_height - 1)
         landmark_z = landmark.z
         landmark_point.append([landmark.visibility, (landmark_x, landmark_y)])
+
+        cont_f2=cont_f2+1
 
         if landmark.visibility < visibility_th:
             continue
@@ -614,7 +644,13 @@ def draw_pose_landmarks(image, landmarks, upper_body_only, prueba, prueba_2, tie
                        cv.LINE_AA)
 
         prueba.writelines('{Time},{Nam},{ind},{cordx},{cordy},{frame},{sp}'.format(Time=tiemp,Nam='Inferior',ind=index, cordx=landmark_x, cordy=landmark_y,frame=frame_i,sp='  '))            
-        prueba_2.writelines('{ind};{cordx};{cordy};'.format(ind=index, cordx=landmark_x, cordy=landmark_y))            
+        
+        if cont_f2<32:
+            prueba_2.writelines('{ind};{cordx};{cordy};'.format(ind=index, cordx=landmark_x, cordy=landmark_y)) 
+
+        if cont_f2==32:
+            prueba_2.writelines('{ind};{cordx};{cordy}'.format(ind=index, cordx=landmark_x, cordy=landmark_y)) 
+          
 
     prueba_2.writelines('\n')
     prueba.writelines('\n')
