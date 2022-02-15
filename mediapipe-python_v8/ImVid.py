@@ -7,7 +7,6 @@ import shutil
 import pandas as pd
 import glob
 
-
 def main():
 
     shutil.rmtree('Imagenes/')
@@ -16,9 +15,16 @@ def main():
 
     path = "Imagenes"
 
-    Ta=open("Tamaño.txt","r")  
-    Size=Ta.read()
-    Ta.close 
+    datos = []
+
+    with open("Tamaño.txt") as fname:
+        lineas=fname.readlines()
+        for linea in lineas:
+            datos.append(linea.strip('\n'))
+    
+    #Ta=open("Tamaño.txt","r")  
+    Size=datos[0]
+    #Ta.close 
     Lim = Size.split(';')
 
 
@@ -36,7 +42,7 @@ def main():
     I = pd.read_csv('prueba_2.csv', sep=';', index_col=False,on_bad_lines='skip')         
     I1=I.Frame
     I=I.drop(['Frame', 'Tiempo'], axis=1)
-    I2=I
+    I2=I[:]
     I=I.drop(I.columns[::3], axis='columns')
     i=0
 
@@ -57,28 +63,28 @@ def main():
     if len(M1)!=0:
         m_may=M1[len(M1)-1]
 
-    N_=m_may
+    #N_=m_may
 
-    if f_may>N_:
-        N_=f_may
+    #if f_may>N_:
+    #    N_=f_may
 
-    if i_may>N_:
-        N_=i_may
+    #if i_may>N_:
+    #    N_=i_may
 
     a=0
 
-    for n in range(0,int(N_)):
+    for n in range(0,int(float(datos[1]))):
         a=a+1
-        file_name = 'Imagen_'+str(a)
+        #file_name = 'Imagen_'+str(a)
 
         img=np.zeros((int(Lim[1]),int(Lim[0]),3), np.uint8)
         point_size = 1
         point_color = (0, 0, 500)
         point_color_manos = (500, 0, 0)
 
-        if  f_may!=0 and n<f_may and (F1.iloc[f]==n):
+        if  n<f_may and (F1.iloc[f]==n):
 
-            x_f=F.iloc[f,0:len(F.columns)-1:2]
+            x_f=F.iloc[f,0:len(F.columns):2]
             y_f=F.iloc[f,1:len(F.columns):2]
             f=f+1        
 
@@ -187,7 +193,10 @@ def main():
                 m=m+1
 
 
-        frames='Img'+str(a)+'.jpg'
+        frames='Img'+str(a)+'.jpg'    
+
+        cv.putText(img, "FRAME:" + str(a-1), (10, 30),cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2, cv.LINE_AA)
+    
         cv.imwrite(os.path.join(path,frames),img)
 
 
