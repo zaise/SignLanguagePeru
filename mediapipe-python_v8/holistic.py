@@ -38,11 +38,9 @@ def main(video_dir):
     # 引数解析 #################################################################
     args = get_args()
 
-    cap_device = args.device
     cap_width = args.width
     cap_height = args.height
 
-    upper_body_only = args.upper_body_only
     min_detection_confidence = args.min_detection_confidence
     min_tracking_confidence = args.min_tracking_confidence
 
@@ -72,7 +70,6 @@ def main(video_dir):
     salida = cv.VideoWriter(str('Salida/')+str(video_dir[:-4])+str('.avi'), fourcc, 20.0, size)
     mp_holistic = mp.solutions.holistic
     holistic = mp_holistic.Holistic(
-        upper_body_only=upper_body_only,
         min_detection_confidence=min_detection_confidence,
         min_tracking_confidence=min_tracking_confidence,
     )
@@ -149,7 +146,7 @@ def main(video_dir):
             brect = calc_bounding_rect(debug_image, pose_landmarks)
             # 描画
             debug_image = draw_pose_landmarks(debug_image, pose_landmarks,
-                                              upper_body_only,prueba,prueba_2,tiemp,frame_i)
+                                              prueba,prueba_2,tiemp,frame_i)
             debug_image = draw_bounding_rect(use_brect, debug_image, brect)
 
         # Hands ###############################################################
@@ -162,7 +159,7 @@ def main(video_dir):
             # 外接矩形の計算
             brect = calc_bounding_rect(debug_image, left_hand_landmarks)
             # 描画
-            debug_image = draw_hands_landmarks(debug_image, cx, cy, left_hand_landmarks, upper_body_only, 
+            debug_image = draw_hands_landmarks(debug_image, cx, cy, left_hand_landmarks,  
                                             prueba,prueba_3, tiemp,frame_i, 'R')
             debug_image = draw_bounding_rect(use_brect, debug_image, brect)
            
@@ -175,7 +172,7 @@ def main(video_dir):
             brect = calc_bounding_rect(debug_image, right_hand_landmarks)
             # 描画
             debug_image = draw_hands_landmarks(debug_image, cx, cy, right_hand_landmarks, 
-                                            upper_body_only,prueba ,prueba_3, tiemp, frame_i,'L')
+                                            prueba ,prueba_3, tiemp, frame_i,'L')
             debug_image = draw_bounding_rect(use_brect, debug_image, brect)
 
         cv.putText(debug_image, "FPS:" + str(display_fps), (10, 30),
@@ -255,7 +252,7 @@ def calc_bounding_rect(image, landmarks):
     return [x, y, x + w, y + h]
 
 
-def draw_hands_landmarks(image, cx, cy, landmarks, upper_body_only,prueba,prueba_3,tiemp, frame_i,handedness_str='R'):
+def draw_hands_landmarks(image, cx, cy, landmarks, prueba,prueba_3,tiemp, frame_i,handedness_str='R'):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
@@ -325,11 +322,6 @@ def draw_hands_landmarks(image, cx, cy, landmarks, upper_body_only,prueba,prueba
             cv.circle(image, (landmark_x, landmark_y), 5, (0, 255, 0), 2)
             cv.circle(image, (landmark_x, landmark_y), 12, (0, 255, 0), 2)
 
-        if not upper_body_only:
-            cv.putText(image, "z:" + str(round(landmark_z, 3)),
-                       (landmark_x - 10, landmark_y - 10),
-                       cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1,
-                       cv.LINE_AA)
         
         #a=['index', 'landmark_x', 'landmark_y', 'handedness_str']
       	#a=[str(index), str(landmark_x), str(landmark_y), str(handedness_str)]
@@ -550,7 +542,7 @@ def draw_face_landmarks(image, landmarks, prueba,prueba_1,tiemp,frame_i):
     return image
 
 
-def draw_pose_landmarks(image, landmarks, upper_body_only, prueba, prueba_2, tiemp,frame_i, visibility_th=0.5):
+def draw_pose_landmarks(image, landmarks, prueba, prueba_2, tiemp,frame_i, visibility_th=0.5):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
@@ -637,11 +629,6 @@ def draw_pose_landmarks(image, landmarks, upper_body_only, prueba, prueba_2, tie
         if index == 32:  # 左つま先
             cv.circle(image, (landmark_x, landmark_y), 5, (0, 255, 0), 2)
 
-        if not upper_body_only:
-            cv.putText(image, "z:" + str(round(landmark_z, 3)),
-                       (landmark_x - 10, landmark_y - 10),
-                       cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1,
-                       cv.LINE_AA)
 
         prueba.writelines('{Time},{Nam},{ind},{cordx},{cordy},{frame},{sp}'.format(Time=tiemp,Nam='Inferior',ind=index, cordx=landmark_x, cordy=landmark_y,frame=frame_i,sp='  '))            
         
