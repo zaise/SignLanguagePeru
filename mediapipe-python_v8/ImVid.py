@@ -214,8 +214,8 @@ def Video_salida(a):
 
     height, width  = ima.shape[:2]
 
-    video = cv.VideoWriter('Salida/Out'+str(a),cv.VideoWriter_fourcc(*'mp4v'),20,(width,height))
-        
+    #video = cv.VideoWriter('Salida/Out'+str(a),cv.VideoWriter_fourcc(*'mp4v'),20,(width,height))
+    video = cv.VideoWriter('Salida/'+str(a[:-4])+str('out')+str('.mp4'),cv.VideoWriter_fourcc(*'mp4v'),20,(width,height))    
 
     for y in range(len(img_array)):
         video.write(img_array[y])
