@@ -45,16 +45,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-    
-
-'''    for i in range (3,5):
-        try:
-            name=train_df['label'][i]+str(i)+".mp4"
-            name_mid="TEMP/"+name
-            name_out="Descarga/"+name
-            video = VideoFileClip(name_mid).subclip(train_df['time_start'][i],train_df['time_end'][i])
-            #video.write_videofile(name_out)    
-            video.to_videofile(name_out, codec="libx264", temp_audiofile='temp-audio.m4a', remove_temp=True, audio_codec='aac')
-            
-        except:
-            continue   '''
