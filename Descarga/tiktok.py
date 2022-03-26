@@ -11,6 +11,8 @@ train_df=pd.read_csv('tiktoks.csv')
 
 
 def main():
+    
+    print('Iniciando descarga')
     for i in range (0,train_df.shape[0]):
         try:
             video=train_df['url'][i]
