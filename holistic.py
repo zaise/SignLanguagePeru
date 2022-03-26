@@ -72,6 +72,7 @@ def main(video_dir):
     holistic = mp_holistic.Holistic(
         min_detection_confidence=min_detection_confidence,
         min_tracking_confidence=min_tracking_confidence,
+        model_complexity=1
     )
 
     # FPS計測モジュール ########################################################
@@ -81,8 +82,8 @@ def main(video_dir):
     csvwriter= csv.writer(prueba, delimiter=";",quoting=csv.QUOTE_NONNUMERIC)
     csvwriter.writerow(['ind','cx','cy','hand'])'''
     
-    prueba= open("pruebat.csv","w")
-    prueba.writelines('{tim},{Name},{ind},{cordx},{cordy},{hand},{frame}\n'.format(tim='Time',Name='Name',ind='index', cordx='CY', cordy='CX', hand='hand',frame='frame'))
+    #prueba= open("pruebat.csv","w")
+    #prueba.writelines('{tim},{Name},{ind},{cordx},{cordy},{hand},{frame}\n'.format(tim='Time',Name='Name',ind='index', cordx='CY', cordy='CX', hand='hand',frame='frame'))
     prueba_1= open("prueba_1.csv","w")
     prueba_1.writelines('{Frame};{Tiempo};'.format(Frame='Frame',Tiempo='Tiempo'))
     for consta_3 in range(0,468):
@@ -120,7 +121,7 @@ def main(video_dir):
         ret, image = cap.read()
         if not ret:
             break
-        image = cv.flip(image, 1)  # ミラー表示
+        #image = cv.flip(image, 0)  # ミラー表示
         debug_image = copy.deepcopy(image)
 
         # 検出実施 #############################################################
@@ -136,7 +137,7 @@ def main(video_dir):
             # 外接矩形の計算
             brect = calc_bounding_rect(debug_image, face_landmarks)
             # 描画
-            debug_image = draw_face_landmarks(debug_image, face_landmarks,prueba,prueba_1,tiemp,frame_i)
+            debug_image = draw_face_landmarks(debug_image, face_landmarks,prueba_1,tiemp,frame_i)
             debug_image = draw_bounding_rect(use_brect, debug_image, brect)
 
         # Pose ###############################################################
@@ -146,7 +147,7 @@ def main(video_dir):
             brect = calc_bounding_rect(debug_image, pose_landmarks)
             # 描画
             debug_image = draw_pose_landmarks(debug_image, pose_landmarks,
-                                              prueba,prueba_2,tiemp,frame_i)
+                                              prueba_2,tiemp,frame_i)
             debug_image = draw_bounding_rect(use_brect, debug_image, brect)
 
         # Hands ###############################################################
@@ -160,7 +161,7 @@ def main(video_dir):
             brect = calc_bounding_rect(debug_image, left_hand_landmarks)
             # 描画
             debug_image = draw_hands_landmarks(debug_image, cx, cy, left_hand_landmarks,  
-                                            prueba,prueba_3, tiemp,frame_i, 'R')
+                                            prueba_3, tiemp,frame_i, 'L')
             debug_image = draw_bounding_rect(use_brect, debug_image, brect)
            
 
@@ -172,7 +173,7 @@ def main(video_dir):
             brect = calc_bounding_rect(debug_image, right_hand_landmarks)
             # 描画
             debug_image = draw_hands_landmarks(debug_image, cx, cy, right_hand_landmarks, 
-                                            prueba ,prueba_3, tiemp, frame_i,'L')
+                                            prueba_3, tiemp, frame_i,'R')
             debug_image = draw_bounding_rect(use_brect, debug_image, brect)
 
         cv.putText(debug_image, "FPS:" + str(display_fps), (10, 30),
@@ -188,7 +189,6 @@ def main(video_dir):
         # キー処理(ESC：終了) #################################################
         key = cv.waitKey(1)
         if key == 27:  # ESC
-            prueba.close()
             prueba_1.close()
             break
 
@@ -252,7 +252,7 @@ def calc_bounding_rect(image, landmarks):
     return [x, y, x + w, y + h]
 
 
-def draw_hands_landmarks(image, cx, cy, landmarks, prueba,prueba_3,tiemp, frame_i,handedness_str='R'):
+def draw_hands_landmarks(image, cx, cy, landmarks,prueba_3,tiemp, frame_i,handedness_str='L'):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
@@ -335,7 +335,7 @@ def draw_hands_landmarks(image, cx, cy, landmarks, prueba,prueba_3,tiemp, frame_
         #else:
         #    mano=0
 
-        prueba.writelines('{Time},{Nam},{ind},{cordx},{cordy},{hand},{frame}'.format(Time=tiemp,Nam='Mano',ind=index, cordx=landmark_x, cordy=landmark_y, hand=handedness_str,frame=frame_i))
+        #prueba.writelines('{Time},{Nam},{ind},{cordx},{cordy},{hand},{frame}'.format(Time=tiemp,Nam='Mano',ind=index, cordx=landmark_x, cordy=landmark_y, hand=handedness_str,frame=frame_i))
         
         if cont_f3<20:
             prueba_3.writelines('{ind};{cordx};{cordy};{hand};'.format(ind=index, cordx=landmark_x, cordy=landmark_y, hand=handedness_str))
@@ -345,7 +345,7 @@ def draw_hands_landmarks(image, cx, cy, landmarks, prueba,prueba_3,tiemp, frame_
 
                 
     prueba_3.writelines('\n')
-    prueba.writelines('\n')
+    #prueba.writelines('\n')
 
         
     # 接続線
@@ -392,7 +392,7 @@ def draw_hands_landmarks(image, cx, cy, landmarks, prueba,prueba_3,tiemp, frame_
     return image
 
 
-def draw_face_landmarks(image, landmarks, prueba,prueba_1,tiemp,frame_i):
+def draw_face_landmarks(image, landmarks,prueba_1,tiemp,frame_i):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
@@ -414,7 +414,7 @@ def draw_face_landmarks(image, landmarks, prueba,prueba_1,tiemp,frame_i):
 
         cv.circle(image, (landmark_x, landmark_y), 1, (0, 255, 0), 1)
 
-        prueba.writelines('{Time},{nam},{ind},{cordx},{cordy},{frame}'.format(Time=tiemp,nam='Face',ind=index, cordx=landmark_x, cordy=landmark_y,frame=frame_i))
+        #prueba.writelines('{Time},{nam},{ind},{cordx},{cordy},{frame}'.format(Time=tiemp,nam='Face',ind=index, cordx=landmark_x, cordy=landmark_y,frame=frame_i))
 
         if cont_f1<467:
             prueba_1.writelines('{ind};{cordx};{cordy};'.format(ind=(index),cordx=landmark_x, cordy=landmark_y,))
@@ -425,7 +425,7 @@ def draw_face_landmarks(image, landmarks, prueba,prueba_1,tiemp,frame_i):
         
 
     prueba_1.writelines('\n')
-    prueba.writelines('\n')
+    #prueba.writelines('\n')
 
     if len(landmark_point) > 0:
         # 参考：https://github.com/tensorflow/tfjs-models/blob/master/facemesh/mesh_map.jpg
@@ -542,7 +542,7 @@ def draw_face_landmarks(image, landmarks, prueba,prueba_1,tiemp,frame_i):
     return image
 
 
-def draw_pose_landmarks(image, landmarks, prueba, prueba_2, tiemp,frame_i, visibility_th=0.5):
+def draw_pose_landmarks(image, landmarks, prueba_2, tiemp,frame_i, visibility_th=0.5):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
@@ -630,7 +630,7 @@ def draw_pose_landmarks(image, landmarks, prueba, prueba_2, tiemp,frame_i, visib
             cv.circle(image, (landmark_x, landmark_y), 5, (0, 255, 0), 2)
 
 
-        prueba.writelines('{Time},{Nam},{ind},{cordx},{cordy},{frame},{sp}'.format(Time=tiemp,Nam='Inferior',ind=index, cordx=landmark_x, cordy=landmark_y,frame=frame_i,sp='  '))            
+        #prueba.writelines('{Time},{Nam},{ind},{cordx},{cordy},{frame},{sp}'.format(Time=tiemp,Nam='Inferior',ind=index, cordx=landmark_x, cordy=landmark_y,frame=frame_i,sp='  '))            
         
         if cont_f2<32:
             prueba_2.writelines('{ind};{cordx};{cordy};'.format(ind=index, cordx=landmark_x, cordy=landmark_y)) 
@@ -640,7 +640,7 @@ def draw_pose_landmarks(image, landmarks, prueba, prueba_2, tiemp,frame_i, visib
           
 
     prueba_2.writelines('\n')
-    prueba.writelines('\n')
+    #prueba.writelines('\n')
 
     if len(landmark_point) > 0:
         # 右目
