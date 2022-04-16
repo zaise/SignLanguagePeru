@@ -22,7 +22,7 @@ def main():
         for linea in lineas:
             datos.append(linea.strip('\n'))
     
-    #Ta=open("Tamaño.txt","r")  
+
     Size=datos[0]
     #Ta.close 
     Lim = Size.split(';')
@@ -63,13 +63,7 @@ def main():
     if len(M1)!=0:
         m_may=M1[len(M1)-1]
 
-    #N_=m_may
-
-    #if f_may>N_:
-    #    N_=f_may
-
-    #if i_may>N_:
-    #    N_=i_may
+    
 
     a=0
 
@@ -202,6 +196,15 @@ def main():
 
 def Video_salida(a):
 
+    datos = []
+    
+    with open("Tamaño.txt") as fname:
+        lineas=fname.readlines()
+        for linea in lineas:
+            datos.append(linea.strip('\n'))
+
+    FPS=int(float(datos[2]))
+
     img_array = []
 
     jpg = glob.glob('Imagenes/*.jpg')
@@ -214,8 +217,8 @@ def Video_salida(a):
 
     height, width  = ima.shape[:2]
 
-    video = cv.VideoWriter('Salida/'+str(a[:-4])+str('out')+str('.mp4'),cv.VideoWriter_fourcc(*'mp4v'),20,(width,height))
-    #video = cv.VideoWriter('Salida/'+str(a[:-4])+str('out')+str('.avi'),cv.VideoWriter_fourcc(*'MJPG'),20,(width,height))
+    video = cv.VideoWriter('Salida/'+str(a[:-4])+str('out')+str('.mp4'),cv.VideoWriter_fourcc(*'mp4v'),FPS,(width,height))
+
         
 
     for y in range(len(img_array)):
