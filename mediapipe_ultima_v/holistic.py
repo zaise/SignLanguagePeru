@@ -67,12 +67,12 @@ def main(video_dir):
     
     # モデルロード #############################################################
     fourcc = cv.VideoWriter_fourcc(*'MJPG')
-    salida = cv.VideoWriter(str('Salida/')+str(video_dir[:-4])+str('.avi'), fourcc, 20.0, size)
+    salida = cv.VideoWriter(str('Salida/')+str(video_dir[:-4])+str('.avi'), fourcc,cap.get(cv.CAP_PROP_FPS),size)
     mp_holistic = mp.solutions.holistic
     holistic = mp_holistic.Holistic(
         min_detection_confidence=min_detection_confidence,
         min_tracking_confidence=min_tracking_confidence,
-        model_complexity=1
+        model_complexity=2 #no estaba, es para mejorar la precisión
     )
 
     # FPS計測モジュール ########################################################
@@ -82,8 +82,6 @@ def main(video_dir):
     csvwriter= csv.writer(prueba, delimiter=";",quoting=csv.QUOTE_NONNUMERIC)
     csvwriter.writerow(['ind','cx','cy','hand'])'''
     
-    #prueba= open("pruebat.csv","w")
-    #prueba.writelines('{tim},{Name},{ind},{cordx},{cordy},{hand},{frame}\n'.format(tim='Time',Name='Name',ind='index', cordx='CY', cordy='CX', hand='hand',frame='frame'))
     prueba_1= open("prueba_1.csv","w")
     prueba_1.writelines('{Frame};{Tiempo};'.format(Frame='Frame',Tiempo='Tiempo'))
     for consta_3 in range(0,468):
@@ -322,20 +320,7 @@ def draw_hands_landmarks(image, cx, cy, landmarks,prueba_3,tiemp, frame_i,handed
             cv.circle(image, (landmark_x, landmark_y), 5, (0, 255, 0), 2)
             cv.circle(image, (landmark_x, landmark_y), 12, (0, 255, 0), 2)
 
-        
-        #a=['index', 'landmark_x', 'landmark_y', 'handedness_str']
-      	#a=[str(index), str(landmark_x), str(landmark_y), str(handedness_str)]
-       	#a=str(index)+","+ str(landmark_x)+"," + str(landmark_y) + ","+ str(handedness_str)
-       	#csvwriter.writerow([index, landmark_x, landmark_y, handedness_str])
-        #writer.writerow({'Parte y lado': 'mano' + str(handedness_str), 'x': landmark_x, 'y': landmark_y})
-        
-        #if handedness_str=='R':
-        #    mano=1
-            
-        #else:
-        #    mano=0
-
-        #prueba.writelines('{Time},{Nam},{ind},{cordx},{cordy},{hand},{frame}'.format(Time=tiemp,Nam='Mano',ind=index, cordx=landmark_x, cordy=landmark_y, hand=handedness_str,frame=frame_i))
+         
         
         if cont_f3<20:
             prueba_3.writelines('{ind};{cordx};{cordy};{hand};'.format(ind=index, cordx=landmark_x, cordy=landmark_y, hand=handedness_str))
