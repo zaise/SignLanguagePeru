@@ -219,7 +219,7 @@ def Video_salida(a):
 
     ID=a.split(sep='_')
 
-    video = cv.VideoWriter('Salida/'+str(ID)+'/'+str(a[:-4])+str('out')+str('.mp4'),cv.VideoWriter_fourcc(*'mp4v'),FPS,(width,height))
+    video = cv.VideoWriter('Salida/'+str(ID[0])+'/'+str(a[:-4])+str('out')+str('.mp4'),cv.VideoWriter_fourcc(*'mp4v'),FPS,(width,height))
 
         
 
