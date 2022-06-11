@@ -34,6 +34,7 @@ videos_iniciales=len(contenido)
 
 @functools.lru_cache(maxsize=None)
 def main(n):
+
     print('video',str(n+1)+str('/')+str(videos_iniciales),contenido[n])
     print('Sacando puntos...')
     holistic.main(contenido[n])

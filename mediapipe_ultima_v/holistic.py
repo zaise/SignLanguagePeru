@@ -6,6 +6,7 @@ import csv
 import cv2 as cv
 import numpy as np
 import mediapipe as mp
+import os
 
 from utils import CvFpsCalc
 
@@ -67,7 +68,13 @@ def main(video_dir):
     
     # モデルロード #############################################################
     fourcc = cv.VideoWriter_fourcc(*'MJPG')
-    salida = cv.VideoWriter(str('Salida/')+str(video_dir[:-4])+str('.avi'), fourcc,cap.get(cv.CAP_PROP_FPS),size)
+
+    ID=video_dir.split(sep='_')
+
+    if not os.path.exists('Salida/'+str(ID[0])):
+        os.makedirs('Salida/'+str(ID[0]))
+
+    salida = cv.VideoWriter(str('Salida/')+str(ID[0])+'/'+str(video_dir[:-4])+str('.avi'), fourcc,cap.get(cv.CAP_PROP_FPS),size)
     mp_holistic = mp.solutions.holistic
     holistic = mp_holistic.Holistic(
         min_detection_confidence=min_detection_confidence,

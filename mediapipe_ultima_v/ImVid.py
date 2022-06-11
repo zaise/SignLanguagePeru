@@ -217,7 +217,9 @@ def Video_salida(a):
 
     height, width  = ima.shape[:2]
 
-    video = cv.VideoWriter('Salida/'+str(a[:-4])+str('out')+str('.mp4'),cv.VideoWriter_fourcc(*'mp4v'),FPS,(width,height))
+    ID=a.split(sep='_')
+
+    video = cv.VideoWriter('Salida/'+str(ID)+'/'+str(a[:-4])+str('out')+str('.mp4'),cv.VideoWriter_fourcc(*'mp4v'),FPS,(width,height))
 
         
 
