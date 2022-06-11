@@ -82,7 +82,7 @@ def main(video_dir):
     csvwriter= csv.writer(prueba, delimiter=";",quoting=csv.QUOTE_NONNUMERIC)
     csvwriter.writerow(['ind','cx','cy','hand'])'''
     
-    prueba_1= open("prueba_1.csv","w")
+    prueba_1= open(str('csv/')+str(video_dir[:-4])+"_face.csv","w")
     prueba_1.writelines('{Frame};{Tiempo};'.format(Frame='Frame',Tiempo='Tiempo'))
     for consta_3 in range(0,468):
         if consta_3 < 467:
@@ -91,7 +91,7 @@ def main(video_dir):
             prueba_1.writelines('{Index};{x};{y}\n'.format(Index='Index',x='x',y='y'))
 
     
-    prueba_2= open("prueba_2.csv","w")
+    prueba_2= open(str('csv/')+str(video_dir[:-4])+"_body.csv","w")
     prueba_2.writelines('{Frame};{Tiempo};'.format(Frame='Frame',Tiempo='Tiempo'))
     for consta in range(0,33):
         if consta < 32:
@@ -101,7 +101,7 @@ def main(video_dir):
         #pr2.writelines(items)
         #'{Frame},{Tiempo},{Index},{x},{y}\n'.format(Frame='Frame',Tiempo='Tiempo',Index='Index',x='x',y='y')
 
-    prueba_3= open("prueba_3.csv","w")
+    prueba_3= open(str('csv/')+str(video_dir[:-4])+"_hands.csv","w")
     prueba_3.writelines('{Frame};{Tiempo};'.format(Frame='Frame',Tiempo='Tiempo'))
     for consta_2 in range(0,21):
         if consta_2 < 20:

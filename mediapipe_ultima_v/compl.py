@@ -16,6 +16,9 @@ import functools
 contenido = os.listdir(path_video)
 '''
 
+if not os.path.exists('csv'):
+    os.makedirs('csv')
+
 
 path_video='Videos'
 
@@ -36,7 +39,7 @@ def main(n):
     holistic.main(contenido[n])
     sleep(0.1)
     print('Sacando Imagenes...')
-    ImVid.main()
+    ImVid.main(contenido[n])
     print('Sacando Videos...')
     ImVid.Video_salida(contenido[n])
     main.cache_clear()

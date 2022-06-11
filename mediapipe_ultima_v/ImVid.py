@@ -7,7 +7,7 @@ import shutil
 import pandas as pd
 import glob
 
-def main():
+def main(video_dir):
 
     shutil.rmtree('Imagenes/')
 
@@ -28,7 +28,7 @@ def main():
     Lim = Size.split(';')
 
 
-    F = pd.read_csv('prueba_1.csv', sep=';', index_col=False,on_bad_lines='skip')    
+    F = pd.read_csv(str('csv/')+str(video_dir[:-4])+"_face.csv", sep=';', index_col=False,on_bad_lines='skip')    
     F1=F.Frame
     F=F.drop(['Frame', 'Tiempo'], axis=1)
     F=F.drop(F.columns[::3], axis='columns')
@@ -39,7 +39,7 @@ def main():
         f_may=F1[len(F1)-1]
 
 
-    I = pd.read_csv('prueba_2.csv', sep=';', index_col=False,on_bad_lines='skip')         
+    I = pd.read_csv(str('csv/')+str(video_dir[:-4])+"_body.csv", sep=';', index_col=False,on_bad_lines='skip')         
     I1=I.Frame
     I=I.drop(['Frame', 'Tiempo'], axis=1)
     I2=I[:]
@@ -52,7 +52,7 @@ def main():
         i_may=I1[len(I1)-1]
 
 
-    M = pd.read_csv('prueba_3.csv', sep=';', index_col=False,on_bad_lines='skip')       
+    M = pd.read_csv(str('csv/')+str(video_dir[:-4])+"_hands.csv", sep=';', index_col=False,on_bad_lines='skip')       
     M1=M.Frame
     M=M.drop(['Frame', 'Tiempo'], axis=1)
     M=M.drop(M.columns[::4], axis='columns')
