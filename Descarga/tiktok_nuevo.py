@@ -23,7 +23,7 @@ def main():
 
         try:
             video=train_df['url'][i]
-            name=train_df['tiktok_id'][i]+str(i)+".mp4"
+            name=train_df['tiktok_id'][i]+'_'+str(i)+".mp4"
             name_mid="TEMP/"+name
             name_out="Descarga/"+name
             
@@ -63,4 +63,3 @@ def descarga(name,video):
 
 if __name__ == '__main__':
     main()
-
